@@ -1,14 +1,18 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { create } from 'ipfs-http-client'
 import './home.css'
 import docImage from './Document_image.png'
+import { ethers } from "ethers";
+import Hashes from ".././artifacts/contracts/Hashes.sol/Hashes.json";
+
+const hashesAddress="0x5FbDB2315678afecb367f032d93F642f64180aa3";
 
 function MainHomePage() {
   const [fileData, setFileData] = useState()
   const [loading, setLoading] = useState(false)
   const [loading2, setLoading2] = useState(false)
   const [fileHash, setFileHash] = useState([])
-
+ let count=-1;
   const startIPFS = async () => {
     const addedFiles = []
     const ipfs = create({
@@ -19,17 +23,60 @@ function MainHomePage() {
     console.log('adding File')
     const ipfsAdd = ipfs.addAll(fileData)
     for await (const file of ipfsAdd) {
+      count++
       addedFiles.push({
         cid: file.cid.toString(),
         path: file.path,
         size: file.size,
+        fileName: fileData[count].name
       })
+      
+      // console.log(file)
     }
     setFileHash(addedFiles)
     setLoading2(true)
-    console.log(addedFiles)
+    // console.log(ipfsAdd)
+   
   }
+  useEffect(async()=>{
+    if (typeof window.ethereum !== "undefined") {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      // const signer = provider.getSigner(); 
+      const contract = new ethers.Contract(
+        hashesAddress,
+        Hashes.abi,
+        provider
+      );
+      try {
+        const data = await contract.retriveHash();
+        console.log("data: ",data);
+        
+      } catch (error) {
+        console.log("Error: ", error);
+      }
+    }
+  },[])
+
+  async function requestAccounts(){
+        await window.ethereum.request({ method:"eth_requestAccounts" });
+  }  
   console.log(fileHash)
+
+  const handleAdd = async()=>{
+    if(!fileHash) return;
+    if (typeof window.ethereum !== "undefined") {
+      await requestAccounts();
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const contract = new ethers.Contract(
+        hashesAddress,
+        Hashes.abi,
+        signer
+      );
+      const transaction = await contract.addHashes(JSON.stringify(fileHash));
+      await transaction.wait();
+     
+    }}
 
   const onImageChange = (event) => {
     event.preventDefault()
@@ -40,7 +87,7 @@ function MainHomePage() {
       alert('The File Was not uploaded successfully')
     }
   }
-
+// console.log(fileData);
   return (
     <div className="flex h-screen justify-center items-center flex-col">
       <div className="flex w-full justify-center mainContainer">
@@ -79,19 +126,29 @@ function MainHomePage() {
           : null}
       </div>
       <div className="flex displayHash">
-        {loading2
+        {/* {loading2
           ? fileHash.map((hash, index) => {
-              console.log(hash)
+              // console.log(hash)
               return (
                 <div className=" mx-3 my-3 hashElement" key={index}>
                   {hash.path}
                 </div>
               )
             })
-          : null}
+          : null} */}
       </div>
+      {loading2?
+          <button className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm my-3 mx-3' onClick={handleAdd}>ADD TO BLOCKCHAIN</button>
+          :null
+      }
+      
+
+         <a href='/search'> 
+          <button className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm mx-3'>Search</button>
+          </a>
+            
     </div>
   )
 }
 
-export default MainHomePage
+export default MainHomePage;

@@ -71,7 +71,7 @@ const Search = () => {
               <button className='border-[1px] mx-3 p-3 bg-blue-300 border-solid border-black rounded'>Upload Files</button>
             </a>
             {
-              loading? (<a href={`https://ipfs.infura.io/ipfs/${searchFileHash.fileHash}`} target="_blank">{searchFileHash.fileName}</a>):null
+              loading? (<a href={`https://ipfs.infura.io/ipfs/${searchFileHash.fileHash}`} className="border-[1px] mx-4 p-3 bg-blue-300 border-solid border-black rounded" target="_blank">{searchFileHash.fileName}</a>):null
             }
         </div>
         </>

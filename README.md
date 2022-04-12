@@ -38,7 +38,7 @@ Switch to localhost:8545
 Click on import an account on metamask then copy the private key of one of the accounts shown during step-3 and paste it to import that account onto your metamask
 
 NOW,
-Upload file(s) then click the 'Submit' button and then click the 'ADD TO BLOCKCHAIN' button, this will ask for a payment through metamask, confirm the payment and then the file's hash will stored on the blockchain.
+Upload file(s) then click the 'Submit' button and then click the 'ADD TO BLOCKCHAIN' button, this will ask for a payment through metamask, confirm the payment and then the file's hash will be stored on the blockchain.
 
 You can Search for files by clicking the Search button and entering the file name with the file extension 
 For eg: 'ABC.pdf'

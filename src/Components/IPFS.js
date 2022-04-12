@@ -10,10 +10,10 @@ import "react-toastify/dist/ReactToastify.css";
 const hashesAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 
 function MainHomePage() {
-  const [fileData, setFileData] = useState();
+  const [fileData, setFileData] = useState(); //contains the file data
   const [loading, setLoading] = useState(false);
   const [loading2, setLoading2] = useState(false);
-  const [fileHash, setFileHash] = useState([]);
+  const [fileHash, setFileHash] = useState([]); //contains file hashes
   let count = -1;
   const startIPFS = async () => {
     const addedFiles = [];
@@ -23,7 +23,10 @@ function MainHomePage() {
       protocol: "https",
     });
     console.log("adding File");
-    const ipfsAdd = ipfs.addAll(fileData);
+
+    //get the hashes from IPFS
+
+    const ipfsAdd = ipfs.addAll(fileData);  
     for await (const file of ipfsAdd) {
       count++;
       addedFiles.push({
@@ -32,32 +35,44 @@ function MainHomePage() {
         size: file.size,
         fileName: fileData[count].name,
       });
-
-      // console.log(file)
     }
     setFileHash(addedFiles);
-    setLoading2(true);
-    // console.log(ipfsAdd)
+    setLoading2(true);  
   };
-  useEffect(async () => {
-    if (typeof window.ethereum !== "undefined") {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      // const signer = provider.getSigner();
-      const contract = new ethers.Contract(hashesAddress, Hashes.abi, provider);
-      try {
-        const data = await contract.retriveHash();
-        console.log("data: ", data);
-      } catch (error) {
-        console.log("Error: ", error);
+
+//This effect will immediately show whats in the blockchain currently
+
+  useEffect(() => {
+    async function fetchData() {
+      if (typeof window.ethereum !== "undefined") {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        // const signer = provider.getSigner();
+        const contract = new ethers.Contract(
+          hashesAddress,
+          Hashes.abi,
+          provider
+        );
+        try {
+          const data = await contract.retriveHash();
+          console.log("data: ", data);
+          setHashData(data);
+        } catch (error) {
+          console.log("Error: ", error);
+        }
       }
     }
+    fetchData();
   }, []);
 
+
+  //get the accounts from metamask
   async function requestAccounts() {
     await window.ethereum.request({ method: "eth_requestAccounts" });
   }
   console.log(fileHash);
 
+
+  //add the hashes to the blockchain
   const handleAdd = async () => {
     if (!fileHash) return;
     if (typeof window.ethereum !== "undefined") {
@@ -66,7 +81,7 @@ function MainHomePage() {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
       const contract = new ethers.Contract(hashesAddress, Hashes.abi, signer);
-      const transaction = await contract.addHashes(JSON.stringify(fileHash));
+      const transaction = await contract.addHashes(JSON.stringify(fileHash)); //here the filehash is converted to a string as our smart contract only takes string as argument
       await transaction.wait();
       toast("Your file has been successfully added!!", {
         position: "top-center",
@@ -78,6 +93,8 @@ function MainHomePage() {
     }
   };
 
+  //Taking the input from user
+
   const onImageChange = (event) => {
     event.preventDefault();
     if (event.target.files) {
@@ -87,7 +104,7 @@ function MainHomePage() {
       alert("The File Was not uploaded successfully");
     }
   };
-  // console.log(fileData);
+  
   return (
     <>
       <ToastContainer />
@@ -129,18 +146,6 @@ function MainHomePage() {
                 );
               })
             : null}
-        </div>
-        <div className="flex displayHash">
-          {/* {loading2
-          ? fileHash.map((hash, index) => {
-              // console.log(hash)
-              return (
-                <div className=" mx-3 my-3 hashElement" key={index}>
-                  {hash.path}
-                </div>
-              )
-            })
-          : null} */}
         </div>
         {loading2 ? (
           <button

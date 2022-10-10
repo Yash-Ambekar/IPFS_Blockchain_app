@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/IPFS_Blockchain_app/static/css/main.9958cd92.css",
-    "main.js": "/IPFS_Blockchain_app/static/js/main.53b780d4.js",
+    "main.js": "/IPFS_Blockchain_app/static/js/main.0fbeee6d.js",
     "static/js/787.9a1fae5a.chunk.js": "/IPFS_Blockchain_app/static/js/787.9a1fae5a.chunk.js",
     "index.html": "/IPFS_Blockchain_app/index.html",
     "main.9958cd92.css.map": "/IPFS_Blockchain_app/static/css/main.9958cd92.css.map",
-    "main.53b780d4.js.map": "/IPFS_Blockchain_app/static/js/main.53b780d4.js.map",
+    "main.0fbeee6d.js.map": "/IPFS_Blockchain_app/static/js/main.0fbeee6d.js.map",
     "787.9a1fae5a.chunk.js.map": "/IPFS_Blockchain_app/static/js/787.9a1fae5a.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.9958cd92.css",
-    "static/js/main.53b780d4.js"
+    "static/js/main.0fbeee6d.js"
   ]
 }
